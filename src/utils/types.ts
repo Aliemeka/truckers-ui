@@ -6,3 +6,10 @@ export interface TruckType {
   color: string;
   driver: string;
 }
+
+export interface LocationType {
+  id: number;
+  truckId: number;
+  longitude: number;
+  latitude: number;
+}

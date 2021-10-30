@@ -1,24 +1,33 @@
 import axios from "axios";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, lazy } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "../components/Layout";
+import AddLocationModal from "../components/Modals/AddLocationModal";
 import EditTruckModal from "../components/Modals/EditTruckModal";
-import { TruckType } from "../utils/types";
+import TruckLocation from "../components/TruckLocation";
+import { LocationType, TruckType } from "../utils/types";
 
 const TruckPage = () => {
   const { id } = useParams<{ id: string }>();
   const [truck, setTruck] = useState<TruckType>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const [modalOpen, openModal] = useState<number>(0);
   const [updated, setUpdated] = useState<number>(0);
+  const [locationModal, setLocationModal] = useState<number>(0);
+
+  const [loadLocations, setLoadLocations] = useState<boolean>(true);
+  const [locations, setLocations] = useState<LocationType[]>([]);
 
   useEffect(() => {
     setLoading(true);
+    setSuccess(false);
     axios
       .get(`http://localhost:5000/trucks/${id}`)
       .then((res) => {
         const truckData = res.data;
         setLoading(false);
+        setSuccess(true);
         setTruck(truckData);
       })
       .catch(() => {
@@ -26,13 +35,35 @@ const TruckPage = () => {
       });
   }, [updated]);
 
+  useEffect(() => {
+    if (success) {
+      setLoadLocations(true);
+      axios
+        .get(`http://localhost:5000/trucks/${id}/locations`)
+        .then((res) => {
+          console.log(res.data);
+          setLoadLocations(false);
+          setLocations(res.data);
+        })
+        .catch(() => {
+          setLoadLocations(false);
+        });
+    }
+  }, [success]);
+
   const handleUpdate = () => {
     setLoading(true);
     setTimeout(() => {
       openModal(0);
+      setLocationModal(0);
       setUpdated(Math.random);
     }, 300);
   };
+
+  useEffect(() => {
+    setLocationModal(0);
+    openModal(0);
+  }, []);
 
   const handleClick = () => {
     openModal(modalOpen + 1);
@@ -156,13 +187,33 @@ const TruckPage = () => {
                     </a>
                   </span>
                 </div>
-                <p className="leading-relaxed">
-                  Locations
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                </p>
+                <div className="leading-relaxed">
+                  Locations:
+                  {loadLocations ? (
+                    <div className="grid w-full gap-y-3">
+                      <div className="bg-gray-300 h-12 animate-pulse" />
+                      <div className="bg-gray-300 h-12 animate-pulse" />
+                      <div className="bg-gray-300 h-12 animate-pulse" />
+                    </div>
+                  ) : locations.length ? (
+                    <div className="grid w-full gap-y-3">
+                      {locations.map((loct) => (
+                        <TruckLocation
+                          lattitude={loct.longitude}
+                          longitude={loct.latitude}
+                          key={id}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm  text-gray-500">
+                      <em>No locations</em>
+                      <br />
+                      <br />
+                      <br />
+                    </div>
+                  )}
+                </div>
                 <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
                   <div className="flex">
                     <span className="mr-3">Color</span>
@@ -196,11 +247,14 @@ const TruckPage = () => {
                   </span>
                   <button
                     onClick={() => handleClick()}
-                    className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
+                    className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 justify-center items-center focus:outline-none hover:bg-indigo-600 rounded"
                   >
                     Edit
                   </button>
-                  <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
+                  <button
+                    onClick={() => setLocationModal(Math.random())}
+                    className="rounded-full px-6 py-2 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4"
+                  >
                     <svg
                       fill="currentColor"
                       strokeLinecap="round"
@@ -211,6 +265,7 @@ const TruckPage = () => {
                     >
                       <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
                     </svg>
+                    Add Location
                   </button>
                 </div>
               </div>
@@ -223,6 +278,11 @@ const TruckPage = () => {
             range={truck.range}
             truckId={truck.id}
             onSuccess={handleUpdate}
+          />
+          <AddLocationModal
+            onSuccess={handleUpdate}
+            truckId={truck.id}
+            open={locationModal}
           />
         </section>
       ) : (
