@@ -1,34 +1,42 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { brotliCompress } from "zlib";
 import Layout from "../components/Layout";
+import EditTruckModal from "../components/Modals/EditTruckModal";
 import { TruckType } from "../utils/types";
 
 const TruckPage = () => {
   const { id } = useParams<{ id: string }>();
   const [truck, setTruck] = useState<TruckType>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [modalOpen, openModal] = useState<number>(0);
+  const [updated, setUpdated] = useState<number>(0);
 
   useEffect(() => {
     setLoading(true);
     axios
       .get(`http://localhost:5000/trucks/${id}`)
       .then((res) => {
-        console.log("sometjo");
         const truckData = res.data;
         setLoading(false);
         setTruck(truckData);
       })
-      .catch((e) => {
+      .catch(() => {
         setLoading(false);
-        console.log(e);
       });
-  }, []);
+  }, [updated]);
 
-  useEffect(() => {
-    console.log(loading);
-  }, [loading]);
+  const handleUpdate = () => {
+    setLoading(true);
+    setTimeout(() => {
+      openModal(0);
+      setUpdated(Math.random);
+    }, 300);
+  };
+
+  const handleClick = () => {
+    openModal(modalOpen + 1);
+  };
 
   return (
     <Layout pageTitle="Truck Details" heading="Details of truck">
@@ -55,9 +63,9 @@ const TruckPage = () => {
                     <svg
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       className="w-4 h-4 text-indigo-500"
                       viewBox="0 0 24 24"
                     >
@@ -66,9 +74,9 @@ const TruckPage = () => {
                     <svg
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       className="w-4 h-4 text-indigo-500"
                       viewBox="0 0 24 24"
                     >
@@ -77,9 +85,9 @@ const TruckPage = () => {
                     <svg
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       className="w-4 h-4 text-indigo-500"
                       viewBox="0 0 24 24"
                     >
@@ -88,9 +96,9 @@ const TruckPage = () => {
                     <svg
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       className="w-4 h-4 text-indigo-500"
                       viewBox="0 0 24 24"
                     >
@@ -99,9 +107,9 @@ const TruckPage = () => {
                     <svg
                       fill="none"
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       className="w-4 h-4 text-indigo-500"
                       viewBox="0 0 24 24"
                     >
@@ -113,9 +121,9 @@ const TruckPage = () => {
                     <a className="text-gray-500">
                       <svg
                         fill="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         className="w-5 h-5"
                         viewBox="0 0 24 24"
                       >
@@ -125,9 +133,9 @@ const TruckPage = () => {
                     <a className="text-gray-500">
                       <svg
                         fill="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         className="w-5 h-5"
                         viewBox="0 0 24 24"
                       >
@@ -137,9 +145,9 @@ const TruckPage = () => {
                     <a className="text-gray-500">
                       <svg
                         fill="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
                         className="w-5 h-5"
                         viewBox="0 0 24 24"
                       >
@@ -170,9 +178,9 @@ const TruckPage = () => {
                         <svg
                           fill="none"
                           stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
                           className="w-4 h-4"
                           viewBox="0 0 24 24"
                         >
@@ -186,15 +194,18 @@ const TruckPage = () => {
                   <span className="title-font font-medium text-lg text-gray-900">
                     Driven by {truck.driver}
                   </span>
-                  <button className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
+                  <button
+                    onClick={() => handleClick()}
+                    className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
+                  >
                     Edit
                   </button>
                   <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
                     <svg
                       fill="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       className="w-5 h-5"
                       viewBox="0 0 24 24"
                     >
@@ -205,6 +216,14 @@ const TruckPage = () => {
               </div>
             </div>
           </div>
+          <EditTruckModal
+            open={modalOpen}
+            driver={truck.driver}
+            name={truck.name}
+            range={truck.range}
+            truckId={truck.id}
+            onSuccess={handleUpdate}
+          />
         </section>
       ) : (
         <section className="grid py-12 place-items-center h-20">

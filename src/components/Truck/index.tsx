@@ -27,9 +27,9 @@ const Truck: FC<TruckProps> = ({ id, imageSrc, name, driver, range }) => {
               {name}
             </Link>
           </h3>
-          <p className="mt-1 text-sm text-gray-500">{driver}</p>
+          <p className="mt-1 text-sm text-gray-900">{driver}</p>
         </div>
-        <p className="text-sm font-medium text-gray-900">{range}</p>
+        <p className="text-sm font-medium text-gray-900">Range: {range}km</p>
       </div>
     </div>
   );
