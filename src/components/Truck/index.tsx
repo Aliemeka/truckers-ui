@@ -12,7 +12,7 @@ interface TruckProps {
 const Truck: FC<TruckProps> = ({ id, imageSrc, name, driver, range }) => {
   return (
     <div className="group relative bg-gray-200">
-      <div className="w-full bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75">
+      <div className="w-full bg-gray-200 aspect-w-1 aspect-h-1 max-h-48 rounded-md overflow-hidden group-hover:opacity-75">
         <img
           src={imageSrc}
           alt={name}

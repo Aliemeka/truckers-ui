@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDropzone } from "react-dropzone";
+import { Redirect } from "react-router-dom";
 
 import { InputGroup } from "../components/Form";
 import Layout from "../components/Layout";
@@ -66,6 +67,15 @@ const AddTruck = () => {
   });
 
   useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        <Redirect to="/" />;
+      }, 600);
+    }
+    () => clearTimeout();
+  }, [success]);
+
+  useEffect(() => {
     formik.values.imgSrc = imageUrl;
   }, [imageUrl]);
 
@@ -78,7 +88,7 @@ const AddTruck = () => {
           </div>
         ) : (
           error && (
-            <div className="h-10 bg-green-200 grid place-items-center text-red-600">
+            <div className="h-10 bg-red-200 grid place-items-center text-red-600">
               Upload failed
             </div>
           )
