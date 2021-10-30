@@ -17,7 +17,6 @@ export const InputGroup: FC<InputGroupProps> = ({
   placeholder = "",
   error = false,
   errorText = "",
-  defaultValue = "",
   description = "",
   horizontal = false,
   ...newProps
@@ -44,7 +43,6 @@ export const InputGroup: FC<InputGroupProps> = ({
           name={name}
           className={finalClass}
           placeholder={placeholder}
-          defaultValue={defaultValue}
           {...newProps}
         />
         {description && (
